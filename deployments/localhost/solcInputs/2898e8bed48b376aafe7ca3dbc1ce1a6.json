@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Wallet.sol": {
+      "content": "// SPDX-License-Identifier: UNLICENSED\r\npragma solidity 0.8.0;\r\n\r\ncontract Wallet {\r\n    address[] public approvers;\r\n    uint public quorum;\r\n\r\n    struct Transfer {\r\n        uint id;\r\n        uint amount;\r\n        address payable to;\r\n        uint approvals;\r\n        bool sent;\r\n    }\r\n\r\n    Transfer[] public transfers;\r\n    mapping(address => mapping(uint => bool)) public approvals;\r\n\r\n    constructor(address[] memory _approvers, uint _quorum) {\r\n        approvers = _approvers;\r\n        quorum = _quorum;\r\n    }\r\n\r\n    function getApprovers() external view returns( address[] memory ) {\r\n        return approvers;\r\n    }\r\n\r\n    function getTransfers() external view returns( Transfer[] memory ) {\r\n        return transfers;\r\n    }\r\n\r\n    function createTransfer(uint amount, address payable to) external onlyApprover {\r\n        transfers.push(Transfer(\r\n            transfers.length,\r\n            amount,\r\n            to,\r\n            0,\r\n            false\r\n        ));\r\n    }\r\n\r\n    function approveTransfer(uint id) external onlyApprover {\r\n        require( transfers[id].sent == false, \"tansfer has already been sent\" );\r\n        require( approvals[msg.sender][id] == false, \"cannot approve transfer twice\" );\r\n        \r\n        approvals[msg.sender][id] = true;\r\n        transfers[id].approvals++;\r\n\r\n        if( transfers[id].approvals >= quorum ){\r\n            transfers[id].sent = true;\r\n            address payable to = transfers[id].to;\r\n            uint amount = transfers[id].amount;\r\n            to.transfer(amount);\r\n        }\r\n\r\n    }\r\n\r\n    receive() external payable {}\r\n\r\n    modifier onlyApprover() {\r\n        bool allowed = false;\r\n        for( uint i = 0; i < approvers.length; i++ ){\r\n            if( approvers[i] == msg.sender ){\r\n                allowed = true;\r\n            }\r\n        }\r\n        require( allowed == true, \"only approver allowed\" );\r\n        _;\r\n    }\r\n}\r\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 2000
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
