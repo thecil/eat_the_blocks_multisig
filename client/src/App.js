@@ -57,7 +57,6 @@ function App() {
   }
 
   const approveTransfer = async (transferId) => {
-    let transfers;
     try {
       const _tx = await wallet.methods
         .approveTransfer(transferId)

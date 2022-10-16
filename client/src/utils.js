@@ -16,7 +16,6 @@ const getWeb3 = () => new Promise(async (resolve, reject) => {
 });
 
 const getWallet = async web3 => {
-
     return new web3.eth.Contract(
         Wallet.abi,
         Wallet.address

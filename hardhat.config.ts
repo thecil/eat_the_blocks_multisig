@@ -46,6 +46,10 @@ const config: HardhatUserConfig = {
       default: 2,
       "goerli": '0x84fA2c7a9DBD3347cb4f4418cAb225ECD278a93D'
     },
+    nonSigner: {
+      default: 3,
+      "goerli": '0x9B5416219dc491519cdf4523C0c2Ed290b780A9f'
+    },
   }
 };
 
